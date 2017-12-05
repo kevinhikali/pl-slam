@@ -145,7 +145,7 @@ void StereoFrame::extractInitialStereoFeatures( int fast_th )
             bfm->knnMatch( ldesc_l,ldesc_r, lmatches_lr, 2);
         // sort matches by the distance between the best and second best matches
         double nn_dist_th, nn12_dist_th;
-        lineDescriptorMAD(lmatches_lr,nn_dist_th, nn12_dist_th);        
+        lineDescriptorMAD(lmatches_lr,nn_dist_th, nn12_dist_th);
         nn12_dist_th  = nn12_dist_th * Config::descThL();
         // bucle around pmatches
         sort( lmatches_lr.begin(), lmatches_lr.end(), sort_descriptor_by_queryIdx() );
@@ -178,7 +178,7 @@ void StereoFrame::extractInitialStereoFeatures( int fast_th )
                 Vector3d le_l; le_l << sp_l.cross(ep_l); le_l = le_l / sqrt( le_l(0)*le_l(0) + le_l(1)*le_l(1) );
                 Vector3d sp_r; sp_r << lines_r[lr_tdx].startPointX, lines_r[lr_tdx].startPointY, 1.0;
                 Vector3d ep_r; ep_r << lines_r[lr_tdx].endPointX,   lines_r[lr_tdx].endPointY,   1.0;
-                Vector3d le_r; le_r << sp_r.cross(ep_r);                
+                Vector3d le_r; le_r << sp_r.cross(ep_r);
                 double overlap = lineSegmentOverlapStereo( sp_l(1), ep_l(1), sp_r(1), ep_r(1) );
                 sp_r << - (le_r(2)+le_r(1)*lines_l[lr_qdx].startPointY )/le_r(0) , lines_l[lr_qdx].startPointY ,  1.0;
                 ep_r << - (le_r(2)+le_r(1)*lines_l[lr_qdx].endPointY   )/le_r(0) , lines_l[lr_qdx].endPointY ,    1.0;
@@ -620,8 +620,6 @@ double StereoFrame::lineSegmentOverlapStereo( double spl_obs, double epl_obs, do
         overlap = 0.f;
 
     return overlap;
-
-
 }
 
 Mat StereoFrame::plotStereoFrame()

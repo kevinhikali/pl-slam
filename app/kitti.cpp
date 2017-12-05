@@ -35,10 +35,6 @@ using namespace PLSLAM;
 
 int main(int argc, char **argv)
 {
-    // read inputs
-    int frame_offset = 0, frame_number = 0, frame_step = 1;
-    string dataset_name = "kitti";
-
     // read dataset root dir fron environment variable
     string dataset_dir = "/home/kevin/Downloads/kitti/2011_09_26/2011_09_26_drive_0001_extract/";
 
@@ -124,8 +120,6 @@ int main(int argc, char **argv)
     }
 
     // setup image directories
-    // string img_dir_l = dataset_dir + "/" + dset_config["images_subfolder_l"].as<string>();
-    // string img_dir_r = dataset_dir + "/" + dset_config["images_subfolder_r"].as<string>();
     string img_dir_l = dataset_dir + "image_00/data/";
     string img_dir_r = dataset_dir + "image_01/data/";
 
@@ -199,25 +193,6 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    // skip #frame_offset frames in the beginning, and grab #frame_number frames
-    int k = 0;
-    if( frame_number == 0 )
-        frame_number = n_imgs_l;
-    for (std::map<std::string, std::string>::iterator it_l = sorted_imgs_l.begin(), it_r = sorted_imgs_r.begin();
-         it_l != sorted_imgs_l.end(), it_r != sorted_imgs_r.end(); k++)
-    {
-        if( (k<frame_offset) || (k>frame_offset+frame_number-1) || ( k % frame_step != 0 ) )
-        {
-            sorted_imgs_l.erase( it_l++ );
-            sorted_imgs_r.erase( it_r++ );
-        }
-        else
-        {
-            ++it_l;
-            ++it_r;
-        }
-    }
-
     // create PLSLAM object
     PLSLAM::MapHandler* map = new PLSLAM::MapHandler(cam_pin);
 
@@ -228,7 +203,6 @@ int main(int argc, char **argv)
     for (std::map<std::string, std::string>::iterator it_l = sorted_imgs_l.begin(), it_r = sorted_imgs_r.begin();
          it_l != sorted_imgs_l.end(), it_r != sorted_imgs_r.end(); ++it_l, ++it_r, frame_counter++)
     {
-
         // load images
         boost::filesystem::path img_path_l = img_dir_path_l / boost::filesystem::path(it_l->second.c_str());
         boost::filesystem::path img_path_r = img_dir_path_r / boost::filesystem::path(it_r->second.c_str());
@@ -245,23 +219,18 @@ int main(int argc, char **argv)
         }
 
         // initialize
-        if( frame_counter == 0 )
-        {
+        if( frame_counter == 0 ) {
             StVO->initialize(img_l,img_r,0);
             PLSLAM::KeyFrame* kf = new PLSLAM::KeyFrame( StVO->prev_frame, 0 );
             map->initialize( kf );
             // scene.initViewports( img_l.cols, img_r.rows );
-        }
-        // run
-        else
-        {
+        } else { // run
             // PL-StVO
             StVO->insertStereoPair( img_l, img_r, frame_counter );
             StVO->optimizePose();
             cout << "Frame #" << frame_counter << endl;
             // check if a new keyframe is needed
-            if( StVO->needNewKF() )
-            {
+            if( StVO->needNewKF() ) {
                 cout <<         "#KeyFrame:     " << map->max_kf_idx + 1;
                 cout << endl << "#Points:       " << map->map_points.size();
                 cout << endl << "#Lines:     " << map->map_lines.size();
@@ -272,8 +241,12 @@ int main(int argc, char **argv)
                 // add keyframe and features to map
                 map->addKeyFrame( curr_kf );
 
-                Mat img = StVO->curr_frame->plotStereoFrame();
-                imshow("StereoFrame", img);
+                Mat img_frame = StVO->curr_frame->plotStereoFrame();
+                imshow("StereoFrame", img_frame);
+
+                // Mat img_match = StVO->curr_frame->plotStereoMatches();
+                // imshow("StereoMatch", img_match);
+
                 waitKey(1);
             }
             // update StVO
