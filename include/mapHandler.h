@@ -137,7 +137,10 @@ public:
 
     // experiment variables
     Vector7f time;
+
+#ifdef HAS_MRPT
     mrpt::utils::CTicTac clock;
+#endif
 
     // lba variables
     vector<int> lba_kfs;

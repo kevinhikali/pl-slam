@@ -145,7 +145,7 @@ void MapHandler::addKeyFrame( KeyFrame *curr_kf )
         insertKFBowVectorL(curr_kf);
 
     // insert keyframe and add to map of indexes
-    clock.Tic();
+    // clock.Tic();
     vector<int> aux_vec;
     map_keyframes.push_back( curr_kf );
     map_points_kf_idx.insert( std::pair<int,vector<int>>(curr_kf->kf_idx,aux_vec) );
@@ -2779,9 +2779,9 @@ void MapHandler::loopClosure()
     // look for loop closure candidates
     int kf_prev_idx, kf_curr_idx;
     kf_curr_idx = max_kf_idx;
-    clock.Tic();
+    // clock.Tic();
     bool is_lc_candidate = lookForLoopCandidates(kf_curr_idx,kf_prev_idx);
-    time(4) = 1000 * clock.Tac(); //ms
+    // time(4) = 1000 * clock.Tac(); //ms
 
     // compute relative transformation if it is LC candidate
     if( is_lc_candidate )
@@ -2790,9 +2790,9 @@ void MapHandler::loopClosure()
         vector<PointFeature*> lc_points;
         vector<LineFeature*>  lc_lines;
         Vector6d pose_inc;
-        clock.Tic();
+        // clock.Tic();
         bool isLC = isLoopClosure( map_keyframes[kf_prev_idx], map_keyframes[kf_curr_idx], pose_inc, lc_pt_idx, lc_ls_idx, lc_points, lc_lines );
-        time(5) = 1000 * clock.Tac(); //ms
+        // time(5) = 1000 * clock.Tac(); //ms
         // if it is loop closure, add information and update status
         if( isLC )
         {
@@ -2829,9 +2829,9 @@ void MapHandler::loopClosure()
     // LC computation
     if( lc_status == LC_READY )  // add condition indicating that the LC has finished (i.e. the car pass by an already visited street)
     {
-        clock.Tic();
+        // clock.Tic();
         loopClosureOptimizationCovGraphG2O();
-        time(6) = 1000 * clock.Tac(); //ms
+        // time(6) = 1000 * clock.Tac(); //ms
         lc_status = LC_IDLE;
     }
 
