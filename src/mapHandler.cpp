@@ -366,7 +366,7 @@ void MapHandler::lookForCommonMatches( KeyFrame* kf0, KeyFrame* &kf1 )
             else
                 rl_tdx = lr_qdx;
             // check if they are mutual best matches and the minimum distance
-            double dist_12 = lmatches_12[i][1].distance - lmatches_12[i][0].distance;            
+            double dist_12 = lmatches_12[i][1].distance - lmatches_12[i][0].distance;
             // this shouldn't happen
             if( kf0->stereo_frame->stereo_ls[lr_qdx] == NULL || kf1->stereo_frame->stereo_ls[lr_tdx] == NULL )
                 continue;
@@ -1437,7 +1437,7 @@ void MapHandler::levMarquardtOptimizationLBA( vector<double> X_aux, vector<int> 
         DX = VectorXd::Zero(N);
         g  = VectorXd::Zero(N);
         H  = MatrixXd::Zero(N,N);
-        err = 0.0;        
+        err = 0.0;
         // - point observations
         for( vector<Vector6i>::iterator pt_it = pt_obs_list.begin(); pt_it != pt_obs_list.end(); pt_it++ )
         {
@@ -2199,7 +2199,7 @@ void MapHandler::levMarquardtOptimizationGBA( vector<double> X_aux, vector<int> 
     for( int i = 0; i < Nkf; i++)
     {
         Matrix4d Tprev = expmap_se3( X.block(6*i,0,6,1) );
-        Matrix4d Tcurr = Tprev * inverse_se3( expmap_se3( DX.block(6*i,0,6,1) ) );       
+        Matrix4d Tcurr = Tprev * inverse_se3( expmap_se3( DX.block(6*i,0,6,1) ) );
         X.block(6*i,0,6,1) = logmap_se3( Tcurr );
     }
     // update LMs
@@ -3930,8 +3930,8 @@ bool MapHandler::loopClosureOptimizationEssGraphG2O()
     optimizer.setVerbose(true);
     g2o::BlockSolver_6_3::LinearSolverType* linearSolver;
     linearSolver = new g2o::LinearSolverCholmod<g2o::BlockSolver_6_3::PoseMatrixType>();
-    g2o::BlockSolver_6_3* solver_ptr = new g2o::BlockSolver_6_3(linearSolver);
-    g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
+    g2o::BlockSolver_6_3* solver_ptr = new g2o::BlockSolver_6_3(std::unique_ptr<g2o::BlockSolver_6_3::LinearSolverType>(linearSolver));
+    g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(std::unique_ptr<g2o::BlockSolver_6_3>(solver_ptr));
     solver->setUserLambdaInit(1e-10);
     optimizer.setAlgorithm(solver);
 
@@ -4157,8 +4157,8 @@ bool MapHandler::loopClosureOptimizationCovGraphG2O()
     optimizer.setVerbose(true);
     g2o::BlockSolver_6_3::LinearSolverType* linearSolver;
     linearSolver = new g2o::LinearSolverCholmod<g2o::BlockSolver_6_3::PoseMatrixType>();
-    g2o::BlockSolver_6_3* solver_ptr = new g2o::BlockSolver_6_3(linearSolver);
-    g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(solver_ptr);
+    g2o::BlockSolver_6_3* solver_ptr = new g2o::BlockSolver_6_3(std::unique_ptr<g2o::BlockSolver_6_3::LinearSolverType>(linearSolver));
+    g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg(std::unique_ptr<g2o::BlockSolver_6_3>(solver_ptr));
     solver->setUserLambdaInit(1e-10);
     optimizer.setAlgorithm(solver);
 

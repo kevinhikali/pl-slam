@@ -4,7 +4,44 @@ cmake_minimum_required(VERSION 2.7)
 find_package(OpenCV 3 REQUIRED)
 find_package(Boost    REQUIRED COMPONENTS thread system filesystem)
 find_package(Eigen3   REQUIRED)
+
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
+find_package(CSparse  REQUIRED)
 find_package(G2O      REQUIRED)
+if (G2O_FOUND)
+    SET(G2O_LIBS
+        /usr/local/lib/libg2o_cli.so
+        /usr/local/lib/libg2o_core.so
+        /usr/local/lib/libg2o_csparse_extension.so
+        /usr/local/lib/libg2o_ext_freeglut_minimal.so
+        /usr/local/lib/libg2o_incremental.so
+        /usr/local/lib/libg2o_interactive.so
+        /usr/local/lib/libg2o_interface.so
+        /usr/local/lib/libg2o_opengl_helper.so
+        /usr/local/lib/libg2o_parser.so
+        /usr/local/lib/libg2o_simulator.so
+        /usr/local/lib/libg2o_solver_cholmod.so
+        /usr/local/lib/libg2o_solver_csparse.so
+        /usr/local/lib/libg2o_solver_dense.so
+        /usr/local/lib/libg2o_solver_eigen.so
+        /usr/local/lib/libg2o_solver_pcg.so
+        /usr/local/lib/libg2o_solver_slam2d_linear.so
+        /usr/local/lib/libg2o_solver_structure_only.so
+        /usr/local/lib/libg2o_stuff.so
+        /usr/local/lib/libg2o_types_data.so
+        /usr/local/lib/libg2o_types_icp.so
+        /usr/local/lib/libg2o_types_sba.so
+        /usr/local/lib/libg2o_types_sclam2d.so
+        /usr/local/lib/libg2o_types_sim3.so
+        /usr/local/lib/libg2o_types_slam2d_addons.so
+        /usr/local/lib/libg2o_types_slam2d.so
+        /usr/local/lib/libg2o_types_slam3d_addons.so
+        /usr/local/lib/libg2o_types_slam3d.so
+        /usr/local/lib/libg2o_viewer.so
+        )
+    message(STATUS "G2O_INCLUDE_DIR = " ${G2O_INCLUDE_DIR})
+    message(STATUS "G2O_CORE_LIBRARY = " ${G2O_CORE_LIBRARY})
+endif(G2O_FOUND)
 
 if(COMMAND cmake_policy)
   	cmake_policy(SET CMP0003 NEW)	
@@ -37,7 +74,7 @@ endif(NOT YAML_CPP_LIBRARIES)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-SET(G2O_LIBS g2o_cli g2o_ext_freeglut_minimal g2o_simulator g2o_solver_slam2d_linear g2o_types_icp g2o_types_slam2d g2o_core g2o_interface g2o_solver_csparse g2o_solver_structure_only g2o_types_sba g2o_types_slam3d g2o_csparse_extension g2o_opengl_helper g2o_solver_dense g2o_stuff g2o_types_sclam2d g2o_parser g2o_solver_pcg g2o_types_data g2o_types_sim3 cxsparse g2o_ext_csparse cholmod )
+# SET(G2O_LIBS g2o_cli g2o_ext_freeglut_minimal g2o_simulator g2o_solver_slam2d_linear g2o_types_icp g2o_types_slam2d g2o_core g2o_interface g2o_solver_csparse g2o_solver_structure_only g2o_types_sba g2o_types_slam3d g2o_csparse_extension g2o_opengl_helper g2o_solver_dense g2o_stuff g2o_types_sclam2d g2o_parser g2o_solver_pcg g2o_types_data g2o_types_sim3 cxsparse g2o_ext_csparse cholmod )
 
 # Include dirs
 include_directories(
@@ -60,6 +97,7 @@ list(APPEND LINK_LIBS
   ${G2O_LIBS}
   ${PROJECT_SOURCE_DIR}/3rdparty/DBoW2/lib/libDBoW2.so
   ${PROJECT_SOURCE_DIR}/3rdparty/line_descriptor/lib/liblinedesc.so
+  /usr/lib/x86_64-linux-gnu/libcholmod.so
 )
 
 # Set source files 
@@ -113,10 +151,3 @@ target_link_libraries( plslam_dataset plslam )
 add_executable       ( plstvo_dataset app/plstvo_dataset.cpp )
 target_link_libraries( plstvo_dataset plslam )
 endif(HAS_MRPT)
-
-
-
-
-
-
-
