@@ -30,8 +30,6 @@
 #include <fstream>
 #include <sstream>
 
-#include "kitti_tracklets.h"
-
 #include <mapFeatures.h>
 #include <mapHandler.h>
 
