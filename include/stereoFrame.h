@@ -74,11 +74,11 @@ public:
 
     int frame_idx;
     Mat img_l, img_r;
-    Matrix4d Tfw;
+    Matrix4d Tfw; // 3D Transform Matrix
     Matrix4d DT;
 
-    Matrix6d Tfw_cov;
-    Vector6d Tfw_cov_eig;
+    Matrix6d Tfw_cov; // Covariance matrix of 3D Transform Matrix
+    Vector6d Tfw_cov_eig; // Logarithm remap of covariance matrix of 3D Transform Matrix
     double   entropy_first;
 
     Matrix6d DT_cov;

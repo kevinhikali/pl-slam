@@ -7,7 +7,7 @@ set( CMAKE_CXX_FLAGS "-std=c++11 -O3" )
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 
 find_package(OpenCV 3 REQUIRED)
-find_package(Boost REQUIRED COMPONENTS thread system filesystem)
+find_package(Boost REQUIRED COMPONENTS thread system filesystem serialization)
 find_package(Eigen3 REQUIRED)
 
 find_package(CSparse  REQUIRED)

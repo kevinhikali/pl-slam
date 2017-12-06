@@ -61,7 +61,7 @@ void StereoFrameHandler::f2fTracking()
         vector<vector<DMatch>> pmatches_12, pmatches_21;
         // 12 and 21 matches
         pdesc_l1 = prev_frame->pdesc_l;
-        pdesc_l2 = curr_frame->pdesc_l;        
+        pdesc_l2 = curr_frame->pdesc_l;
         if( Config::bestLRMatches() )
         {
             if( Config::lrInParallel() )
@@ -104,7 +104,7 @@ void StereoFrameHandler::f2fTracking()
                 PointFeature* point_ = prev_frame->stereo_pt[lr_qdx];
                 point_->pl_obs = curr_frame->stereo_pt[lr_tdx]->pl;
                 point_->inlier = true;
-                matched_pt.push_back( point_ );                
+                matched_pt.push_back( point_ );
                 curr_frame->stereo_pt[lr_tdx]->idx = prev_frame->stereo_pt[lr_qdx]->idx; // prev idx
             }
         }
@@ -165,7 +165,7 @@ void StereoFrameHandler::f2fTracking()
                 line_->edisp_obs = curr_frame->stereo_ls[lr_tdx]->edisp;
                 line_->spl_obs = curr_frame->stereo_ls[lr_tdx]->spl;
                 line_->epl_obs = curr_frame->stereo_ls[lr_tdx]->epl;
-                line_->le_obs  = curr_frame->stereo_ls[lr_tdx]->le;               
+                line_->le_obs  = curr_frame->stereo_ls[lr_tdx]->le;
                 line_->inlier  = true;
                 matched_ls.push_back( line_ );
                 curr_frame->stereo_ls[lr_tdx]->idx = prev_frame->stereo_ls[lr_qdx]->idx; // prev idx
@@ -657,12 +657,12 @@ bool StereoFrameHandler::needNewKF()
     if( entropy_ratio < Config::minEntropyRatio() || std::isnan(entropy_ratio) || std::isinf(entropy_ratio) ||
         ( curr_frame->DT_cov == Matrix6d::Zero() && curr_frame->DT == Matrix4d::Identity() ) )
     {
-        cout << endl << "Entropy ratio: " << entropy_ratio   << endl;
+        // cout << endl << "Entropy ratio: " << entropy_ratio   << endl;
         return true;
     }
     else
     {
-        cout << endl << "No new KF needed" << endl << endl;
+        // cout << endl << "No new KF needed" << endl << endl;
         return false;
     }
 

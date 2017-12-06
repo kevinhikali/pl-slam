@@ -1659,7 +1659,7 @@ void MapHandler::levMarquardtOptimizationLBA( vector<double> X_aux, vector<int> 
         err_prev = err;
 
     }
-    cout << endl << "LBA Iterations:    " << iters << endl << endl;
+    // cout << endl << "LBA Iterations:    " << iters << endl << endl;
 
     // Update KFs and LMs
     //---------------------------------------------------------------------------------------------

@@ -27,6 +27,11 @@
 #include <boost/filesystem.hpp>
 #include <yaml-cpp/yaml.h>
 
+#include <fstream>
+#include <sstream>
+
+#include "kitti_tracklets.h"
+
 #include <mapFeatures.h>
 #include <mapHandler.h>
 
@@ -36,7 +41,7 @@ using namespace PLSLAM;
 int main(int argc, char **argv)
 {
     // read dataset root dir fron environment variable
-    string dataset_dir = "/home/kevin/Downloads/kitti/2011_09_26/2011_09_26_drive_0001_extract/";
+    string dataset_dir = "/home/kevin/catkin_ws/src/res_kevin/kitti/2011_09_26/2011_09_26_drive_0001_extract/";
 
     // read content of the .yaml dataset configuration file
     YAML::Node dset_config = YAML::LoadFile(dataset_dir+"/kitti.yaml");
@@ -193,6 +198,9 @@ int main(int argc, char **argv)
         return -1;
     }
 
+	vector<string> pl_slam_pose;
+	vector<string> tracklet_pose;
+
     // create PLSLAM object
     PLSLAM::MapHandler* map = new PLSLAM::MapHandler(cam_pin);
 
@@ -200,9 +208,12 @@ int main(int argc, char **argv)
     int frame_counter = 0;
     StereoFrameHandler* StVO = new StereoFrameHandler(cam_pin);
 
+
     for (std::map<std::string, std::string>::iterator it_l = sorted_imgs_l.begin(), it_r = sorted_imgs_r.begin();
          it_l != sorted_imgs_l.end(), it_r != sorted_imgs_r.end(); ++it_l, ++it_r, frame_counter++)
     {
+		static Vector3d tg = Vector3d::Zero();
+
         // load images
         boost::filesystem::path img_path_l = img_dir_path_l / boost::filesystem::path(it_l->second.c_str());
         boost::filesystem::path img_path_r = img_dir_path_r / boost::filesystem::path(it_r->second.c_str());
@@ -210,8 +221,7 @@ int main(int argc, char **argv)
         Mat img_r( imread(img_path_r.string(), CV_LOAD_IMAGE_UNCHANGED) );  assert(!img_r.empty());
 
         // if images are distorted
-        if( rectify )
-        {
+        if( rectify ) {
             Mat img_l_rec, img_r_rec;
             cam_pin->rectifyImagesLR(img_l,img_l_rec,img_r,img_r_rec);
             img_l = img_l_rec;
@@ -228,12 +238,11 @@ int main(int argc, char **argv)
             // PL-StVO
             StVO->insertStereoPair( img_l, img_r, frame_counter );
             StVO->optimizePose();
-            cout << "Frame #" << frame_counter << endl;
+            // cout << "Frame #" << frame_counter << endl;
             // check if a new keyframe is needed
             if( StVO->needNewKF() ) {
-                cout <<         "#KeyFrame:     " << map->max_kf_idx + 1;
-                cout << endl << "#Points:       " << map->map_points.size();
-                cout << endl << "#Lines:     " << map->map_lines.size();
+                // cout << "  #KeyFrame: " << map->max_kf_idx + 1 << "  #Points:   " << map->map_points.size() << "  #Lines:    " << map->map_lines.size();
+
                 // grab StF and update KF in StVO (the StVO thread can continue after this point)
                 PLSLAM::KeyFrame* curr_kf = new PLSLAM::KeyFrame( StVO->curr_frame );
                 // update KF in StVO
@@ -244,21 +253,40 @@ int main(int argc, char **argv)
                 Mat img_frame = StVO->curr_frame->plotStereoFrame();
                 imshow("StereoFrame", img_frame);
 
-                // Mat img_match = StVO->curr_frame->plotStereoMatches();
-                // imshow("StereoMatch", img_match);
-
-                waitKey(1);
+				waitKey(1);
             }
+			Matrix4d Tfw = StVO->curr_frame->Tfw;
+			Vector3d t = Vector3d::Zero();
+			t(0) = Tfw(0, 3); t(1) = Tfw(1, 3); t(2) = Tfw(2, 3);
+			tg += t;
+
+			string pose;
+			stringstream ss;
+			ss<<tg.transpose();
+			pose = ss.str();
+			cout<<pose<<endl;
+			pl_slam_pose.push_back(pose);
+
             // update StVO
             StVO->updateFrame();
         }
     }
 
+	ofstream os;
+	os.open("/home/kevin/pl_slam_pose.txt");
+	int nPlSlamPose = pl_slam_pose.size();
+	cout<<"Writing pose info into "<<endl;
+	for (int i=0;i<nPlSlamPose;i++) {
+		os<<pl_slam_pose[i]<<endl;
+	}
+	os.close();
+	cout<<"Writing finished"<<endl;
+
     // finish SLAM
     map->finishSLAM();
 
     // perform GBA
-    cout << endl << "Performing Global Bundle Adjustment..." ;
+    cout << "Performing Global Bundle Adjustment..." ;
     map->globalBundleAdjustment();
     cout << " ... done." << endl;
 

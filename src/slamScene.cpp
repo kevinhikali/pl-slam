@@ -159,7 +159,7 @@ void slamScene::initializeScene(Matrix4d x_0){
     }
 
     // Initialize the ground truth camera object
-    if(hasGT){       
+    if(hasGT){
         /*frustObj = opengl::CFrustum::Create();
         {
             frustObj->setPose(pose_ini);
@@ -280,7 +280,7 @@ bool slamScene::updateScene(){
     win->repaint();
 
     // Key events   -       TODO: change the trick to employ viewports
-    if(win->keyHit()){       
+    if(win->keyHit()){
         key = win->getPushedKey(&kmods);
         if(key == MRPTK_SPACE){                     // Space    Reset VO
             theScene->clear();
@@ -350,7 +350,7 @@ bool slamScene::updateScene(){
             }
         }
         else if ( (key == 105) || (key == 73) ){    // I        image
-            hasImg   = !hasImg;          
+            hasImg   = !hasImg;
             if(isKitti){
                 if(hasImg)
                     image->setViewportPosition(20, 20, 621, 188);
@@ -903,7 +903,7 @@ CPose3D slamScene::getPoseXYZ(VectorXd x){
     return pose;
 }
 
-CMatrixDouble slamScene::getPoseFormat(Matrix4d T){
+CMatrixDouble slamScene::getPoseFormat(Matrix5d T){
     CMatrixDouble T_(4,4);
     for(unsigned int i = 0; i < 4; i++){
         for(unsigned int j = 0; j < 4; j++){
